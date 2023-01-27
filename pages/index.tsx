@@ -13,7 +13,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex flex-col items-center">
-        <div className="mt-10">
+        <div className="my-10">
           <AddRecordDialog />
           <RecordTable />
         </div>

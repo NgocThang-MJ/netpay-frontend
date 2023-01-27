@@ -14,7 +14,14 @@ import { Record, Attribute } from "types/record";
 const columnHelper = createColumnHelper<Record>();
 
 const renderTag = (price: string) => {
-  return <div className="text-center">{price}</div>;
+  return (
+    <div className="text-center">
+      {new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      }).format(parseFloat(price) || 0)}
+    </div>
+  );
 };
 
 export default function RecordTable() {
@@ -57,7 +64,14 @@ export default function RecordTable() {
         info.getValue() === Attribute.MustHave
           ? renderTag(info.row.original.price)
           : "",
-      footer: () => <div className="text-emerald-400">{sumOfMust}</div>,
+      footer: () => (
+        <div className="text-emerald-400">
+          {new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(sumOfMust || 0)}
+        </div>
+      ),
     }),
     columnHelper.accessor("attribute", {
       header: () => "Nice To Have",
@@ -65,7 +79,14 @@ export default function RecordTable() {
         info.getValue() === Attribute.NiceToHave
           ? renderTag(info.row.original.price)
           : "",
-      footer: () => <div className="text-amber-300">{sumOfNice}</div>,
+      footer: () => (
+        <div className="text-amber-300">
+          {new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(sumOfNice || 0)}
+        </div>
+      ),
     }),
     columnHelper.accessor("attribute", {
       header: () => "Wasted",
@@ -73,7 +94,14 @@ export default function RecordTable() {
         info.getValue() === Attribute.Wasted
           ? renderTag(info.row.original.price)
           : "",
-      footer: () => <div className="text-red-400">{sumOfWasted}</div>,
+      footer: () => (
+        <div className="text-red-400">
+          {new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(sumOfWasted || 0)}
+        </div>
+      ),
     }),
     columnHelper.accessor("date", {
       header: "Date",
