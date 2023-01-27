@@ -1,7 +1,10 @@
 import Head from "next/head";
+import { Roboto } from "@next/font/google";
 
 import RecordTable from "components/record/RecordTable";
 import AddRecordDialog from "components/record/AddRecordDialog";
+
+const roboto = Roboto({ weight: "400", subsets: ["latin"] });
 
 export default function Home() {
   return (
@@ -12,7 +15,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="flex flex-col items-center">
+      <div className={`flex flex-col items-center ${roboto.className}`}>
         <div className="my-10">
           <AddRecordDialog />
           <RecordTable />
