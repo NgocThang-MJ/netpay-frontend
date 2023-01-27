@@ -77,8 +77,11 @@ export default function RecordTable() {
     }),
     columnHelper.accessor("date", {
       header: "Date",
-      cell: (info) =>
-        new Date(info.getValue() || Date.now()).toLocaleDateString("vi-VN"),
+      cell: (info) => (
+        <div className="text-right">
+          {new Date(info.getValue() || Date.now()).toLocaleDateString("vi-VN")}
+        </div>
+      ),
     }),
   ];
 
@@ -104,7 +107,7 @@ export default function RecordTable() {
   return (
     <div>
       {records && records.length > 0 ? (
-        <table className="mx-auto mt-3 text-slate-300">
+        <table className="mt-3 text-slate-300 text-lg">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={crypto.randomUUID()}>

@@ -8,8 +8,6 @@ export async function getRecords() {
       apiUrl = process.env.NEXT_PUBLIC_API_URL_PROD;
     }
 
-    console.log(apiUrl);
-
     if (!apiUrl) return Promise.reject("Cannot get API url");
     const res = await axios.get<Record[]>(`${apiUrl}/records`);
 
