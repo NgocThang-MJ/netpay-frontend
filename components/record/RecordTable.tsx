@@ -57,7 +57,7 @@ export default function RecordTable() {
         info.getValue() === Attribute.MustHave
           ? renderTag(info.row.original.price)
           : "",
-      footer: () => sumOfMust,
+      footer: () => <div className="text-emerald-400">{sumOfMust}</div>,
     }),
     columnHelper.accessor("attribute", {
       header: () => "Nice To Have",
@@ -65,7 +65,7 @@ export default function RecordTable() {
         info.getValue() === Attribute.NiceToHave
           ? renderTag(info.row.original.price)
           : "",
-      footer: () => sumOfNice,
+      footer: () => <div className="text-amber-300">{sumOfNice}</div>,
     }),
     columnHelper.accessor("attribute", {
       header: () => "Wasted",
@@ -73,7 +73,7 @@ export default function RecordTable() {
         info.getValue() === Attribute.Wasted
           ? renderTag(info.row.original.price)
           : "",
-      footer: () => sumOfWasted,
+      footer: () => <div className="text-red-400">{sumOfWasted}</div>,
     }),
     columnHelper.accessor("date", {
       header: "Date",

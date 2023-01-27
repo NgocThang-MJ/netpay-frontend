@@ -4,10 +4,10 @@ export enum Attribute {
   Wasted = "Wasted",
 }
 
-export interface Record  {
+export interface Record {
   _id: { $oid: string };
   name: string;
   date: string;
   price: string;
   attribute: Attribute;
-};
+}

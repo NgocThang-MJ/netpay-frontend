@@ -3,11 +3,15 @@ import { Record } from "types/record";
 
 export async function getRecords() {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL_DEV;
+    let apiUrl = process.env.NEXT_PUBLIC_API_URL_DEV;
+    if (process.env.NODE_ENV === "production") {
+      apiUrl = process.env.NEXT_PUBLIC_API_URL_PROD;
+    }
+
+    console.log(apiUrl);
+
     if (!apiUrl) return Promise.reject("Cannot get API url");
     const res = await axios.get<Record[]>(`${apiUrl}/records`);
-
-    console.log("data", res.data);
 
     return res.data;
   } catch (err) {
