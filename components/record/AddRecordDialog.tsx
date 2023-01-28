@@ -3,9 +3,10 @@ import { Dialog, Transition, Listbox } from "@headlessui/react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Datepicker from "react-tailwindcss-datepicker";
 import axios from "axios";
 
-import { Record, Attribute } from "types/record";
+import { Record, Attribute, RecordForm } from "types/record";
 
 const attributes = [Attribute.MustHave, Attribute.NiceToHave, Attribute.Wasted];
 
@@ -18,7 +19,7 @@ export default function MyModal() {
   const queryClient = useQueryClient();
 
   const [isOpen, setIsOpen] = useState(false);
-  const { register, handleSubmit, control, watch } = useForm<Record>();
+  const { register, handleSubmit, control, watch } = useForm<RecordForm>();
   const { mutate, isLoading } = useMutation({
     mutationFn: (newRecord: Record) => {
       return axios.post(`${apiUrl}/records/create`, newRecord);
@@ -29,8 +30,12 @@ export default function MyModal() {
     },
   });
 
-  const onSubmit: SubmitHandler<Record> = (data) => {
-    mutate(data);
+  const onSubmit: SubmitHandler<RecordForm> = (data) => {
+    mutate({
+      ...data,
+      date: data.date?.startDate?.toString() || new Date().toString(),
+      price: data.price.replaceAll(".", ""),
+    });
   };
 
   function closeModal() {
@@ -46,7 +51,7 @@ export default function MyModal() {
       <button
         type="button"
         onClick={openModal}
-        className="rounded-md bg-black bg-opacity-20 px-4 py-2 mb-1 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+        className="sticky top-5 rounded-md bg-slate-900 px-4 py-2 mb-1 text-sm font-medium text-white hover:bg-opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
       >
         Add new Record
       </button>
@@ -65,7 +70,7 @@ export default function MyModal() {
             <div className="fixed inset-0 bg-black bg-opacity-25" />
           </Transition.Child>
 
-          <div className="fixed inset-0 overflow-y-auto text-slate-800">
+          <div className="fixed inset-0 overflow-y-auto">
             <div className="flex min-h-full items-center justify-center p-4 text-center">
               <Transition.Child
                 as={Fragment}
@@ -76,10 +81,10 @@ export default function MyModal() {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-slate-50 p-7 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-md transform rounded-2xl bg-slate-800 p-10 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
-                    className="text-xl mb-4 font-medium leading-6 text-gray-900"
+                    className="text-xl mb-4 font-medium leading-6"
                   >
                     Add new Record
                   </Dialog.Title>
@@ -91,7 +96,7 @@ export default function MyModal() {
                       <input
                         type="text"
                         id="name"
-                        className="py-2 px-3 rounded-lg mb-3 shadow-md"
+                        className="py-2 px-3 rounded-lg mb-3 shadow-md w-full bg-slate-800 border-thin border-slate-600 outline-none"
                         placeholder="Name"
                         {...register("name")}
                         required
@@ -105,7 +110,7 @@ export default function MyModal() {
                         render={({ field }) => (
                           <Listbox {...field}>
                             <div className="relative mt-1 mb-2">
-                              <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300">
+                              <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-slate-800 border-slate-600 border-thin py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300">
                                 <span className="block truncate">
                                   {watch("attribute") || "MustHave"}
                                 </span>
@@ -122,7 +127,7 @@ export default function MyModal() {
                                 leaveFrom="opacity-100"
                                 leaveTo="opacity-0"
                               >
-                                <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                <Listbox.Options className="absolute mt-1 z-50 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                   {attributes.map((attribute, index) => (
                                     <Listbox.Option
                                       key={index}
@@ -168,24 +173,56 @@ export default function MyModal() {
                       <label htmlFor="price" className="block mb-1">
                         Price
                       </label>
-                      <input
-                        type="number"
-                        id="price"
-                        className="py-2 px-3 rounded-lg mb-3 block shadow-md"
-                        placeholder="Price"
-                        {...register("price")}
-                        required
+                      <Controller
+                        name="price"
+                        control={control}
+                        defaultValue="0"
+                        render={({ field }) => (
+                          <input
+                            type="text"
+                            id="price"
+                            className="py-2 px-3 rounded-lg mb-3 block shadow-md w-full border-thin border-slate-600 bg-slate-800 outline-none"
+                            placeholder="Price"
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === "") {
+                                return field.onChange("0");
+                              }
+                              const isNumber = /^\d+$/.test(
+                                value.replaceAll(".", "")
+                              );
+                              if (!isNumber) return;
+                              return field.onChange(e.target.value);
+                            }}
+                            value={
+                              new Intl.NumberFormat("vi-VN").format(
+                                parseFloat(
+                                  field.value.replaceAll(".", "") || "0"
+                                )
+                              ) || "0"
+                            }
+                            required
+                          />
+                        )}
                       />
-
-                      <label htmlFor="date" className="block mb-1">
+                      <label htmlFor="date" className="mb-1 block">
                         Date
                       </label>
-                      <input
-                        type="text"
-                        id="date"
-                        className="py-2 px-3 rounded-lg mb-3 block shadow-md"
-                        placeholder="Date"
-                        {...register("date")}
+                      <Controller
+                        name="date"
+                        control={control}
+                        render={({ field }) => (
+                          <Datepicker
+                            inputId="date"
+                            inputClassName="border-thin outline-none"
+                            useRange={false}
+                            asSingle={true}
+                            {...field}
+                            maxDate={new Date()}
+                            displayFormat={"DD/MM/YYYY"}
+                            primaryColor="teal"
+                          />
+                        )}
                       />
 
                       <button
