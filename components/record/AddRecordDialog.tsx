@@ -39,9 +39,12 @@ export default function MyModal() {
     // Convert to YYYY/MM/DD
     date = date.slice(0, 10);
 
+    // Get current time to sort in order
+    let time = new Date().toISOString().slice(10);
+
     const insertData = {
       ...data,
-      date,
+      date: date + time,
       price: data.price.replaceAll(".", ""),
     };
     mutate(insertData);
