@@ -19,7 +19,8 @@ export default function MyModal() {
   const queryClient = useQueryClient();
 
   const [isOpen, setIsOpen] = useState(false);
-  const { register, handleSubmit, control, watch } = useForm<RecordForm>();
+  const { register, handleSubmit, control, watch, reset } =
+    useForm<RecordForm>();
   const { mutate, isLoading } = useMutation({
     mutationFn: (newRecord: Record) => {
       return axios.post(`${apiUrl}/records/create`, newRecord);
@@ -27,15 +28,23 @@ export default function MyModal() {
     onSuccess: () => {
       queryClient.refetchQueries({ queryKey: ["records"] });
       setIsOpen(false);
+      reset();
     },
   });
 
   const onSubmit: SubmitHandler<RecordForm> = (data) => {
-    mutate({
+    let date = data.date?.startDate
+      ? new Date(data.date.startDate).toISOString()
+      : new Date().toISOString();
+    // Convert to YYYY/MM/DD
+    date = date.slice(0, 10);
+
+    const insertData = {
       ...data,
-      date: data.date?.startDate?.toString() || new Date().toString(),
+      date,
       price: data.price.replaceAll(".", ""),
-    });
+    };
+    mutate(insertData);
   };
 
   function closeModal() {
@@ -51,7 +60,7 @@ export default function MyModal() {
       <button
         type="button"
         onClick={openModal}
-        className="sticky top-5 rounded-md bg-slate-900 px-4 py-2 mb-1 text-sm font-medium text-white hover:bg-opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+        className="sticky top-5 rounded-md bg-slate-900 bg-opacity-90 px-4 py-2 mb-1 text-sm font-medium text-white hover:bg-opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
       >
         Add new Record
       </button>
@@ -127,15 +136,15 @@ export default function MyModal() {
                                 leaveFrom="opacity-100"
                                 leaveTo="opacity-0"
                               >
-                                <Listbox.Options className="absolute mt-1 z-50 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                <Listbox.Options className="absolute border-thin border-t-0 rounded-t-none border-slate-600 z-50 max-h-60 w-full overflow-auto rounded-md bg-slate-800 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                   {attributes.map((attribute, index) => (
                                     <Listbox.Option
                                       key={index}
                                       className={({ active }) =>
                                         `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
                                           active
-                                            ? "bg-amber-100 text-amber-900"
-                                            : "text-gray-900"
+                                            ? "bg-slate-600 text-teal-400"
+                                            : ""
                                         }`
                                       }
                                       value={attribute}
@@ -152,7 +161,7 @@ export default function MyModal() {
                                             {attribute}
                                           </span>
                                           {selected ? (
-                                            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
+                                            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-teal-500">
                                               <CheckIcon
                                                 className="h-5 w-5"
                                                 aria-hidden="true"
@@ -178,31 +187,39 @@ export default function MyModal() {
                         control={control}
                         defaultValue="0"
                         render={({ field }) => (
-                          <input
-                            type="text"
-                            id="price"
-                            className="py-2 px-3 rounded-lg mb-3 block shadow-md w-full border-thin border-slate-600 bg-slate-800 outline-none"
-                            placeholder="Price"
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              if (value === "") {
-                                return field.onChange("0");
+                          <div className="w-full flex mb-3">
+                            <input
+                              type="text"
+                              id="price"
+                              className="py-2 px-3 rounded-lg block shadow-md grow border-thin border-slate-600 border-r-0 rounded-r-none bg-slate-800 outline-none"
+                              placeholder="Price"
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "") {
+                                  return field.onChange("0");
+                                }
+                                const isNumber = /^\d+$/.test(
+                                  value.replaceAll(".", "")
+                                );
+                                if (!isNumber) return;
+                                return field.onChange(e.target.value);
+                              }}
+                              value={
+                                new Intl.NumberFormat("vi-VN").format(
+                                  parseFloat(
+                                    field.value.replaceAll(".", "") || "0"
+                                  )
+                                ) || "0"
                               }
-                              const isNumber = /^\d+$/.test(
-                                value.replaceAll(".", "")
-                              );
-                              if (!isNumber) return;
-                              return field.onChange(e.target.value);
-                            }}
-                            value={
-                              new Intl.NumberFormat("vi-VN").format(
-                                parseFloat(
-                                  field.value.replaceAll(".", "") || "0"
-                                )
-                              ) || "0"
-                            }
-                            required
-                          />
+                              required
+                            />
+                            <label
+                              htmlFor="price"
+                              className="w-14 flex cursor-pointer items-center justify-center bg-slate-600 text-slate-300 rounded-r-lg border-r-[0.4px] border-slate-600"
+                            >
+                              VND
+                            </label>
+                          </div>
                         )}
                       />
                       <label htmlFor="date" className="mb-1 block">
@@ -211,6 +228,10 @@ export default function MyModal() {
                       <Controller
                         name="date"
                         control={control}
+                        defaultValue={{
+                          startDate: new Date().toISOString(),
+                          endDate: new Date().toISOString(),
+                        }}
                         render={({ field }) => (
                           <Datepicker
                             inputId="date"
@@ -226,8 +247,9 @@ export default function MyModal() {
                       />
 
                       <button
+                        disabled={isLoading}
                         type="submit"
-                        className="inline-flex justify-center mt-10 rounded-md border border-transparent bg-blue-100 px-4 py-2 font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        className="inline-flex justify-center mt-10 rounded-md border border-transparent bg-teal-600 px-4 py-2 font-medium text-slate-200 hover:bg-teal-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                       >
                         {isLoading ? "Submitting..." : "Submit"}
                       </button>
