@@ -61,11 +61,15 @@ export default function RecordTable() {
     columnHelper.accessor("attribute", {
       header: () => "Must Have",
       cell: (info) =>
-        info.getValue() === Attribute.MustHave
-          ? renderTag(info.row.original.price)
-          : "",
+        info.getValue() === Attribute.MustHave ? (
+          <div className="text-emerald-400">
+            {renderTag(info.row.original.price)}
+          </div>
+        ) : (
+          ""
+        ),
       footer: () => (
-        <div className="text-emerald-400">
+        <div className="text-emerald-400 font-bold">
           {new Intl.NumberFormat("vi-VN", {
             style: "currency",
             currency: "VND",
@@ -76,11 +80,15 @@ export default function RecordTable() {
     columnHelper.accessor("attribute", {
       header: () => "Nice To Have",
       cell: (info) =>
-        info.getValue() === Attribute.NiceToHave
-          ? renderTag(info.row.original.price)
-          : "",
+        info.getValue() === Attribute.NiceToHave ? (
+          <div className="text-amber-300">
+            {renderTag(info.row.original.price)}
+          </div>
+        ) : (
+          ""
+        ),
       footer: () => (
-        <div className="text-amber-300">
+        <div className="text-amber-300 font-bold">
           {new Intl.NumberFormat("vi-VN", {
             style: "currency",
             currency: "VND",
@@ -91,11 +99,15 @@ export default function RecordTable() {
     columnHelper.accessor("attribute", {
       header: () => "Wasted",
       cell: (info) =>
-        info.getValue() === Attribute.Wasted
-          ? renderTag(info.row.original.price)
-          : "",
+        info.getValue() === Attribute.Wasted ? (
+          <div className="text-red-400">
+            {renderTag(info.row.original.price)}
+          </div>
+        ) : (
+          ""
+        ),
       footer: () => (
-        <div className="text-red-400">
+        <div className="text-red-400 font-bold">
           {new Intl.NumberFormat("vi-VN", {
             style: "currency",
             currency: "VND",

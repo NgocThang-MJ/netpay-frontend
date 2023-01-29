@@ -4,7 +4,7 @@ import { Roboto } from "@next/font/google";
 import RecordTable from "components/record/RecordTable";
 import AddRecordDialog from "components/record/AddRecordDialog";
 
-const roboto = Roboto({ weight: "400", subsets: ["latin"] });
+const roboto = Roboto({ weight: ["400", "700"], subsets: ["latin"] });
 
 export default function Home() {
   return (
