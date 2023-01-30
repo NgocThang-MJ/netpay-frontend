@@ -169,6 +169,20 @@ export default function RecordTable() {
           displayFormat={"DD/MM/YYYY"}
           primaryColor="teal"
           useRange={false}
+          configs={{
+            shortcuts: {
+              today: "Today",
+              yesterday: "Yesterday",
+              past: (period) => `Past ${period} days`,
+              currentMonth: "Current Month",
+              pastMonth: "Past Month",
+            },
+            footer: {
+              cancel: "Quitter",
+              apply: "Appliquer",
+            },
+          }}
+          showShortcuts={true}
         />
       </div>
       {records && records.length > 0 ? (

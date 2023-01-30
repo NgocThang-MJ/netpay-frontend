@@ -6,7 +6,8 @@ import { getDefaultDates, formatYMD } from "utils/date";
 export async function getRecords(dates: DateRangeType) {
   try {
     let apiUrl = process.env.NEXT_PUBLIC_API_URL_DEV;
-    const {startDate: defaultStartDate, endDate: defaultEndDate} = getDefaultDates();
+    const { startDate: defaultStartDate, endDate: defaultEndDate } =
+      getDefaultDates();
 
     const start = formatYMD(dates.startDate!.toString());
     const end = formatYMD(dates.endDate!.toString());
