@@ -4,6 +4,12 @@ export function formatYMD(date: string) {
   return new Date(date).toISOString().slice(0, 10);
 }
 
+export function addOneDay(date: string) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + 1);
+  return d;
+}
+
 export function getDefaultDates(): DateRangeType {
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();

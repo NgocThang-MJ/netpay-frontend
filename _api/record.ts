@@ -1,7 +1,7 @@
 import axios from "axios";
 import { DateRangeType } from "react-tailwindcss-datepicker/dist/types";
 import { Record } from "types/record";
-import { getDefaultDates, formatYMD } from "utils/date";
+import { getDefaultDates, formatYMD, addOneDay } from "utils/date";
 
 export async function getRecords(dates: DateRangeType) {
   try {
@@ -10,7 +10,7 @@ export async function getRecords(dates: DateRangeType) {
       getDefaultDates();
 
     const start = formatYMD(dates.startDate!.toString());
-    const end = formatYMD(dates.endDate!.toString());
+    const end = formatYMD(addOneDay(dates.endDate!.toString()).toString());
 
     const startDate = start || defaultStartDate;
     const endDate = end || defaultEndDate;
