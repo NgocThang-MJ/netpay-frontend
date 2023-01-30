@@ -7,9 +7,12 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useQuery } from "@tanstack/react-query";
+import Datepicker from "react-tailwindcss-datepicker";
 
 import { getRecords } from "_api/record";
 import { Record, Attribute } from "types/record";
+import { DateRangeType } from "react-tailwindcss-datepicker/dist/types";
+import { getDefaultDates } from "utils/date";
 
 const columnHelper = createColumnHelper<Record>();
 
@@ -26,9 +29,19 @@ const renderTag = (price: string) => {
 
 export default function RecordTable() {
   const [records, setRecords] = useState<Record[]>([]);
+  const defaultDateRange = getDefaultDates();
+  const [value, setValue] = useState<DateRangeType>({
+    startDate: defaultDateRange.startDate,
+    endDate: defaultDateRange.endDate,
+  });
+
+  const handleValueChange = (newValue: DateRangeType) => {
+    setValue(newValue);
+  };
   const { status, data } = useQuery({
-    queryKey: ["records"],
-    queryFn: getRecords,
+    queryKey: ["records", value],
+    queryFn: () => getRecords(value),
+    keepPreviousData: true,
   });
 
   const sumOfMust = data?.reduce((accumulator, currentValue) => {
@@ -146,6 +159,18 @@ export default function RecordTable() {
 
   return (
     <div>
+      <div>
+        <Datepicker
+          inputId="date"
+          value={value}
+          onChange={(value) => handleValueChange(value || defaultDateRange)}
+          inputClassName="border-thin outline-none"
+          maxDate={new Date()}
+          displayFormat={"DD/MM/YYYY"}
+          primaryColor="teal"
+          useRange={false}
+        />
+      </div>
       {records && records.length > 0 ? (
         <table className="mt-3 text-slate-300 text-lg">
           <thead>
