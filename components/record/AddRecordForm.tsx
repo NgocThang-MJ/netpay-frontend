@@ -1,10 +1,11 @@
 import { Fragment, useEffect } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Datepicker from "react-tailwindcss-datepicker";
 import axios from "axios";
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import { FolderPlusIcon } from "@heroicons/react/24/outline";
 
 import { Record, Attribute, RecordForm } from "types/record";
 
@@ -32,7 +33,6 @@ export default function AddRecordForm() {
   });
 
   const onSubmit: SubmitHandler<RecordForm> = (data) => {
-    console.log(data);
     let date = data.date?.startDate
       ? new Date(data.date.startDate).toISOString()
       : new Date().toISOString();
@@ -199,9 +199,10 @@ export default function AddRecordForm() {
         <button
           disabled={isAdding}
           type="submit"
-          className="inline-flex justify-center mt-10 rounded-md border border-transparent bg-teal-600 px-4 py-2 font-medium text-slate-200 hover:bg-teal-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          className="flex justify-center items-center mt-10 rounded-md border border-transparent bg-teal-600 px-3 py-[0.35rem] font-medium text-slate-200 hover:bg-teal-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
         >
-          {isAdding ? "Adding..." : "Add"}
+          <FolderPlusIcon className="h-4 w-4 mr-2" />
+          <span>{isAdding ? "Adding..." : "Add"}</span>
         </button>
       </form>
     </div>

@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-table";
 import { useQuery } from "@tanstack/react-query";
 import Datepicker from "react-tailwindcss-datepicker";
+import { ArchiveBoxXMarkIcon } from "@heroicons/react/24/outline";
 
 import { getRecords } from "_api/record";
 import { Record, Attribute } from "types/record";
@@ -158,7 +159,7 @@ export default function RecordTable() {
   }
 
   return (
-    <div>
+    <div className="min-w-[33rem]">
       <div>
         <Datepicker
           inputId="date"
@@ -241,7 +242,10 @@ export default function RecordTable() {
           </tfoot>
         </table>
       ) : (
-        <div>Empty data</div>
+        <div className="flex flex-col items-center p-3 border rounded-lg border-slate-700 mt-3">
+          <ArchiveBoxXMarkIcon className="h-32 w-32 text-slate-600 mb-2" />
+          <p className="text-slate-400">There's no spending on these days</p>
+        </div>
       )}
     </div>
   );
