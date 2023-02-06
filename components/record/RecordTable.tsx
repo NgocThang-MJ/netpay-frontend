@@ -244,7 +244,9 @@ export default function RecordTable() {
       ) : (
         <div className="flex flex-col items-center p-3 border rounded-lg border-slate-700 mt-3">
           <ArchiveBoxXMarkIcon className="h-32 w-32 text-slate-600 mb-2" />
-          <p className="text-slate-400">There's no spending on these days</p>
+          <p className="text-slate-400">
+            There&apos;s no spending on these days
+          </p>
         </div>
       )}
     </div>
